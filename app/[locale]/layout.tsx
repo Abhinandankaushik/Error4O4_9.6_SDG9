@@ -1,6 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { ClerkProvider } from "@clerk/nextjs";
+import './globals.css';
 
 export default async function LocaleLayout({
     children,

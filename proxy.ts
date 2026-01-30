@@ -6,18 +6,21 @@ const intlMiddleware = createIntlMiddleware(routing);
 
 // Public routes — NOTE: locale aware
 const isPublicRoute = createRouteMatcher([
-  '/(en|hi)/sign-in(.*)',
-  '/(en|hi)/sign-up(.*)',
-  '/(en|hi)',
-  '/(en|hi)/about'
+  '/(en|hi|mr)/sign-in(.*)',
+  '/(en|hi|mr)/sign-up(.*)',
+  '/(en|hi|mr)',
+  '/(en|hi|mr)/about',
+  '/api(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // First handle i18n
-  const intlResponse = intlMiddleware(req);
-  if (intlResponse) return intlResponse;
+  // Skip i18n for API routes
+  if (!req.nextUrl.pathname.startsWith('/api')) {
+    const intlResponse = intlMiddleware(req);
+    if (intlResponse) return intlResponse;
+  }
 
-  // Then handle auth
+  // Handle auth - all API routes are public
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
@@ -25,6 +28,7 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    '/((?!api|_next|_vercel|.*\\..*).*)',
+    '/((?!_next|_vercel|.*\\..*).*)',
+    '/(api|trpc)(.*)',
   ],
 };
