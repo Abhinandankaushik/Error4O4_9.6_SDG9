@@ -1,6 +1,6 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { ClerkProvider } from "@clerk/nextjs";
+import { AuthProvider } from '@/contexts/AuthContext';
 import './globals.css';
 
 export default async function LocaleLayout({
@@ -28,9 +28,9 @@ export default async function LocaleLayout({
             </head>
             <body>
                 <NextIntlClientProvider locale={locale} messages={messages}>
-                    <ClerkProvider>
+                    <AuthProvider>
                         {children}
-                    </ClerkProvider>
+                    </AuthProvider>
                 </NextIntlClientProvider>
             </body>
         </html>

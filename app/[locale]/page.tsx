@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname, useParams } from 'next/navigation';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
 import { Button } from '@/components/ui/Button';
@@ -29,7 +29,7 @@ export default function HomePage() {
     const pathname = usePathname();
     const params = useParams();
     const locale = params.locale as string;
-    const { isSignedIn } = useAuth();
+    const { user } = useAuth();
     const [mounted, setMounted] = useState(false);
     
     useEffect(() => {
@@ -147,8 +147,8 @@ export default function HomePage() {
                                     {t('getStarted')}
                                 </Button>
                             </Link>
-                            {mounted && !isSignedIn && (
-                                <Link href={`/${locale}/sign-in`}>
+                            {mounted && !user && (
+                                <Link href={`/${locale}/login`}>
                                     <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 hover:bg-gradient-to-r hover:from-blue-600/10 hover:to-purple-600/10">
                                         {t('signIn')}
                                     </Button>

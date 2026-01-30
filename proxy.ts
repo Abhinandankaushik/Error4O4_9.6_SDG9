@@ -1,55 +1,111 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import createIntlMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
+import jwt from 'jsonwebtoken';
+import type { NextRequest } from 'next/server';
 
 const intlMiddleware = createIntlMiddleware(routing);
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// Public routes that don't require authentication — locale aware
-const isPublicRoute = createRouteMatcher([
+// Public routes that don't require authentication
+const publicRoutes = [
   '/',
   '/en',
   '/hi',
   '/mr',
-  '/(en|hi|mr)',
-  '/(en|hi|mr)/sign-in(.*)',
-  '/(en|hi|mr)/sign-up(.*)',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks(.*)',
-]);
+  '/login',
+  '/signup',
+  '/sign-in',
+  '/sign-up',
+];
 
-export default clerkMiddleware(async (auth, req) => {
-  // Skip i18n for API routes
-  if (!req.nextUrl.pathname.startsWith('/api')) {
+// Protected routes that require specific roles
+const protectedRoutes = {
+  '/reports/new': ['user', 'manager', 'admin'],
+  '/dashboard/manager': ['manager', 'admin'],
+  '/admin': ['admin'],
+};
+
+function isPublicRoute(pathname: string): boolean {
+  return publicRoutes.some(route => {
+    const localePattern = /^\/(en|hi|mr)/;
+    const cleanPath = pathname.replace(localePattern, '');
+    return cleanPath === route || cleanPath.startsWith(route + '/');
+  });
+}
+
+export default async function middleware(req: NextRequest) {
+  try {
+    // Skip authentication for all API routes
+    if (req.nextUrl.pathname.startsWith('/api')) {
+      return NextResponse.next();
+    }
+
+    // Handle i18n for non-API routes
     const intlResponse = intlMiddleware(req);
     if (intlResponse) return intlResponse;
-  }
 
-  const { userId } = await auth();
-  
-  // Allow access to public routes
-  if (isPublicRoute(req)) {
+    // Allow access to public routes
+    if (isPublicRoute(req.nextUrl.pathname)) {
+      return NextResponse.next();
+    }
+
+    // Check authentication for protected routes
+    const token = req.cookies.get('auth-token')?.value;
+
+    if (!token) {
+      // Redirect to login if not authenticated
+      const pathParts = req.nextUrl.pathname.split('/').filter(Boolean);
+      const locale = ['en', 'hi', 'mr'].includes(pathParts[0]) ? pathParts[0] : 'en';
+      const loginUrl = new URL(`/${locale}/login`, req.url);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    try {
+      // Verify JWT token
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+
+      // Check role-based access
+      const pathname = req.nextUrl.pathname;
+
+      if (pathname.includes('/admin') && decoded.role !== 'admin') {
+        const pathParts = pathname.split('/').filter(Boolean);
+        const locale = ['en', 'hi', 'mr'].includes(pathParts[0]) ? pathParts[0] : 'en';
+        return NextResponse.redirect(new URL(`/${locale}`, req.url));
+      }
+
+      if (pathname.includes('/dashboard/manager')) {
+        if (decoded.role !== 'manager' && decoded.role !== 'admin') {
+          const pathParts = pathname.split('/').filter(Boolean);
+          const locale = ['en', 'hi', 'mr'].includes(pathParts[0]) ? pathParts[0] : 'en';
+          return NextResponse.redirect(new URL(`/${locale}`, req.url));
+        }
+
+        // Check if manager is approved
+        if (decoded.role === 'manager' && !decoded.isApproved) {
+          const pathParts = pathname.split('/').filter(Boolean);
+          const locale = ['en', 'hi', 'mr'].includes(pathParts[0]) ? pathParts[0] : 'en';
+          return NextResponse.redirect(new URL(`/${locale}`, req.url));
+        }
+      }
+
+      return NextResponse.next();
+    } catch (error) {
+      // Invalid token, redirect to login
+      const pathParts = req.nextUrl.pathname.split('/').filter(Boolean);
+      const locale = ['en', 'hi', 'mr'].includes(pathParts[0]) ? pathParts[0] : 'en';
+      const loginUrl = new URL(`/${locale}/login`, req.url);
+      return NextResponse.redirect(loginUrl);
+    }
+  } catch (error) {
+    console.error('Middleware error:', error);
     return NextResponse.next();
   }
-  
-  // Redirect to sign-in if user is not authenticated
-  if (!userId) {
-    const pathParts = req.nextUrl.pathname.split('/').filter(Boolean);
-    const locale = ['en', 'hi', 'mr'].includes(pathParts[0]) ? pathParts[0] : 'en';
-    const signInUrl = new URL(`/${locale}/sign-in`, req.url);
-    signInUrl.searchParams.set('redirect_url', req.url);
-    return NextResponse.redirect(signInUrl);
-  }
-  
-  return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
+    // Skip Next.js internals, static files, and API routes
+    '/((?!api|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
   ],
 };
