@@ -1,4 +1,4 @@
-import { SignIn } from '@clerk/nextjs'
+import { SignUp } from '@clerk/nextjs'
 
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -15,15 +15,15 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
       <div className="mb-8 text-center z-10">
         <div className="flex items-center justify-center gap-2 mb-2">
           <span className="text-5xl">🏗️</span>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-liner-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
             InfraReport
           </h1>
         </div>
         <p className="text-muted-foreground text-sm">Building Better India Together</p>
       </div>
       
-      {/* Sign In Component */}
-      <SignIn 
+      {/* Sign Up Component */}
+      <SignUp 
         appearance={{
           baseTheme: undefined,
           variables: {
@@ -58,8 +58,8 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
           },
         }}
         routing="path"
-        path={`/${locale}/sign-in`}
-        signUpUrl={`/${locale}/sign-up`}
+        path={`/${locale}/sign-up`}
+        signInUrl={`/${locale}/sign-in`}
         afterSignInUrl={`/${locale}`}
         afterSignUpUrl={`/${locale}`}
       />
