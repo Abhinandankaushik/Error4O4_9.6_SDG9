@@ -10,12 +10,15 @@
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.36.10",
     "@tensorflow-models/coco-ssd": "^2.2.3",
     "@tensorflow/tfjs": "^4.17.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
     "cloudinary": "^2.0.0",
     "framer-motion": "^11.0.8",
     "i18next": "^25.8.0",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.563.0",
     "mapbox-gl": "^3.18.1",
     "mongoose": "^9.1.5",
