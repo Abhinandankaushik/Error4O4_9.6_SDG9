@@ -4,6 +4,18 @@ export type ReportStatus = 'submitted' | 'under_review' | 'in_progress' | 'resol
 
 export type ReportPriority = 'low' | 'medium' | 'high' | 'urgent';
 
+export type ApprovalStage = 'pending_city_manager' | 'pending_infra_manager' | 'pending_issue_resolver' | 'pending_contractor' | 'work_in_progress' | 'completed';
+
+export interface IApprovalHistory {
+  stage: ApprovalStage;
+  approvedBy: string; // User ID
+  approverName: string;
+  approverRole: string;
+  action: 'approved' | 'rejected' | 'forwarded' | 'completed';
+  note?: string;
+  timestamp: Date;
+}
+
 export interface IReport {
   _id?: string;
   title: string;
@@ -12,6 +24,16 @@ export interface IReport {
   status: ReportStatus;
   priority: ReportPriority;
   
+  // Approval Workflow
+  currentStage: ApprovalStage;
+  approvalHistory: IApprovalHistory[];
+  
+  // Assigned Personnel
+  assignedCityManager?: string; // User ID
+  assignedInfraManager?: string; // User ID
+  assignedIssueResolver?: string; // User ID
+  assignedContractor?: string; // User ID
+  
   // Location data
   location: {
     type: 'Point';
@@ -19,6 +41,7 @@ export interface IReport {
   };
   address: string;
   area?: string; // Ward/area name
+  city?: string; // City name for filtering
   landmark?: string;
   
   // Images and media
@@ -26,7 +49,7 @@ export interface IReport {
   
   // User relationships
   reportedBy: string; // Reference to User (citizen)
-  assignedTo?: string; // Reference to User (city_manager)
+  assignedTo?: string; // Reference to User (backward compatibility)
   
   // Tracking
   viewCount: number;
@@ -38,6 +61,7 @@ export interface IReport {
   resolutionNote?: string;
   resolutionImages?: string[]; // Before/after images
   estimatedResolutionDate?: Date;
+  workCompletionImages?: string[]; // Images uploaded by contractor after work
   
   // Municipality
   municipalityId?: string; // Reference to Municipality
@@ -77,6 +101,44 @@ const ReportSchema = new Schema<IReport>(
       enum: ['low', 'medium', 'high', 'urgent'],
       default: 'medium',
     },
+    currentStage: {
+      type: String,
+      enum: ['pending_city_manager', 'pending_infra_manager', 'pending_issue_resolver', 'pending_contractor', 'work_in_progress', 'completed'],
+      default: 'pending_city_manager',
+      required: true,
+    },
+    approvalHistory: [{
+      stage: {
+        type: String,
+        required: true,
+      },
+      approvedBy: {
+        type: String,
+        required: true,
+      },
+      approverName: {
+        type: String,
+        required: true,
+      },
+      approverRole: {
+        type: String,
+        required: true,
+      },
+      action: {
+        type: String,
+        enum: ['approved', 'rejected', 'forwarded', 'completed'],
+        required: true,
+      },
+      note: String,
+      timestamp: {
+        type: Date,
+        default: Date.now,
+      },
+    }],
+    assignedCityManager: String,
+    assignedInfraManager: String,
+    assignedIssueResolver: String,
+    assignedContractor: String,
     location: {
       type: {
         type: String,
@@ -102,6 +164,10 @@ const ReportSchema = new Schema<IReport>(
       trim: true,
     },
     area: {
+      type: String,
+      trim: true,
+    },
+    city: {
       type: String,
       trim: true,
     },
@@ -149,6 +215,10 @@ const ReportSchema = new Schema<IReport>(
       maxlength: 1000,
     },
     resolutionImages: {
+      type: [String],
+      default: [],
+    },
+    workCompletionImages: {
       type: [String],
       default: [],
     },

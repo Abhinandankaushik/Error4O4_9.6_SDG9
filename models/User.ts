@@ -1,6 +1,6 @@
 import mongoose, { Schema, Model, models } from 'mongoose';
 
-export type UserRole = 'citizen' | 'city_manager';
+export type UserRole = 'citizen' | 'city_manager' | 'infra_manager' | 'issue_resolver' | 'contractor';
 
 export interface IUser {
   _id?: string;
@@ -10,7 +10,8 @@ export interface IUser {
   role: UserRole;
   phone?: string;
   avatar?: string;
-  managedAreas?: string[]; // For city_manager: array of area/ward IDs they manage
+  city?: string; // City name for filtering
+  managedAreas?: string[]; // For managers: array of area/ward IDs they manage
   municipalityId?: string; // Reference to Municipality
   isActive?: boolean;
   createdAt?: Date;
@@ -38,9 +39,13 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ['citizen', 'city_manager'],
+      enum: ['citizen', 'city_manager', 'infra_manager', 'issue_resolver', 'contractor'],
       default: 'citizen',
       required: true,
+    },
+    city: {
+      type: String,
+      trim: true,
     },
     phone: {
       type: String,

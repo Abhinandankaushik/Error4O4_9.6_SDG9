@@ -1,23 +1,82 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+"use client";
+
+import { SignedIn, SignedOut, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import { useParams } from 'next/navigation';
 import { 
   Home, 
   FileText, 
   Map, 
-  Camera, 
   LayoutDashboard, 
   LogIn,
-  Construction
+  Construction,
+  Building2,
+  Wrench,
+  Target,
+  Hammer
 } from "lucide-react";
 
 function Navbar() {
+  const params = useParams();
+  const locale = params.locale || 'en';
+  const { user } = useUser();
+  const userRole = user?.publicMetadata?.role as string;
+
+  // Get dashboard link based on role
+  const getDashboardLink = () => {
+    switch (userRole) {
+      case 'city_manager':
+        return `/${locale}/dashboard/city-manager`;
+      case 'infra_manager':
+        return `/${locale}/dashboard/infra-manager`;
+      case 'issue_resolver':
+        return `/${locale}/dashboard/issue-resolver`;
+      case 'contractor':
+        return `/${locale}/dashboard/contractor`;
+      default:
+        return `/${locale}/dashboard/manager`; // fallback
+    }
+  };
+
+  // Get dashboard icon based on role
+  const getDashboardIcon = () => {
+    switch (userRole) {
+      case 'city_manager':
+        return <Building2 className="w-4 h-4 group-hover:scale-110 transition-transform" />;
+      case 'infra_manager':
+        return <Wrench className="w-4 h-4 group-hover:scale-110 transition-transform" />;
+      case 'issue_resolver':
+        return <Target className="w-4 h-4 group-hover:scale-110 transition-transform" />;
+      case 'contractor':
+        return <Hammer className="w-4 h-4 group-hover:scale-110 transition-transform" />;
+      default:
+        return <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />;
+    }
+  };
+
+  // Get dashboard label based on role
+  const getDashboardLabel = () => {
+    switch (userRole) {
+      case 'city_manager':
+        return 'City Manager';
+      case 'infra_manager':
+        return 'Infra Manager';
+      case 'issue_resolver':
+        return 'Issue Resolver';
+      case 'contractor':
+        return 'Contractor';
+      default:
+        return 'Dashboard';
+    }
+  };
+
   return (
     <nav className="w-full border-b bg-gradient-to-r from-card via-card to-card backdrop-blur-sm shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
           <Link 
-            href={'/'} 
+            href={`/${locale}`} 
             className="flex items-center gap-3 group"
           >
             <div className="relative">
@@ -37,7 +96,7 @@ function Navbar() {
           {/* Navigation Links */}
           <div className="flex items-center gap-2">
             <Link 
-              href={'/'} 
+              href={`/${locale}`} 
               className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-secondary hover:text-primary transition-all group"
             >
               <Home className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -45,45 +104,40 @@ function Navbar() {
             </Link>
             
             <SignedIn>
-              <Link 
-                href={'/reports/new'} 
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-500/10 hover:text-blue-500 transition-all group"
-              >
-                <FileText className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                <span>Report</span>
-              </Link>
+              {/* Show Report button only for citizens */}
+              {(!userRole || userRole === 'citizen') && (
+                <Link 
+                  href={`/${locale}/reports/new`} 
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-500/10 hover:text-blue-500 transition-all group"
+                >
+                  <FileText className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span>Report</span>
+                </Link>
+              )}
               
               <Link 
-                href={'/map'} 
+                href={`/${locale}/map`} 
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-500/10 hover:text-blue-500 transition-all group"
               >
                 <Map className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 <span>Heat Map</span>
               </Link>
               
-              <Link 
-                href={'/ar-view'} 
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-500/10 hover:text-blue-500 transition-all group relative"
-              >
-                <Camera className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                <span>AR View</span>
-                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                  AI
-                </span>
-              </Link>
-              
-              <Link 
-                href={'/dashboard/manager'} 
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-500/10 hover:text-blue-500 transition-all group"
-              >
-                <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                <span>Dashboard</span>
-              </Link>
+              {/* Show dashboard for employees only */}
+              {userRole && userRole !== 'citizen' && (
+                <Link 
+                  href={getDashboardLink()} 
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-500/10 hover:text-blue-500 transition-all group"
+                >
+                  {getDashboardIcon()}
+                  <span>{getDashboardLabel()}</span>
+                </Link>
+              )}
             </SignedIn>
 
             <SignedOut>
               <Link 
-                href={'/sign-in'}
+                href={`/${locale}/sign-in`}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 group"
               >
                 <LogIn className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

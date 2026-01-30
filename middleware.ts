@@ -1,31 +1,18 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import createIntlMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
-import { routing } from './i18n/routing';
 
-const intlMiddleware = createIntlMiddleware(routing);
-
-// Public routes that don't require authentication — locale aware
+// Public routes that don't require authentication
 const isPublicRoute = createRouteMatcher([
   '/',
   '/en',
   '/hi',
   '/mr',
-  '/(en|hi|mr)',
-  '/(en|hi|mr)/sign-in(.*)',
-  '/(en|hi|mr)/sign-up(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhooks(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  // Skip i18n for API routes
-  if (!req.nextUrl.pathname.startsWith('/api')) {
-    const intlResponse = intlMiddleware(req);
-    if (intlResponse) return intlResponse;
-  }
-
   const { userId } = await auth();
   
   // Allow access to public routes
@@ -35,8 +22,7 @@ export default clerkMiddleware(async (auth, req) => {
   
   // Redirect to sign-in if user is not authenticated
   if (!userId) {
-    const pathParts = req.nextUrl.pathname.split('/').filter(Boolean);
-    const locale = ['en', 'hi', 'mr'].includes(pathParts[0]) ? pathParts[0] : 'en';
+    const locale = req.nextUrl.pathname.split('/')[1] || 'en';
     const signInUrl = new URL(`/${locale}/sign-in`, req.url);
     signInUrl.searchParams.set('redirect_url', req.url);
     return NextResponse.redirect(signInUrl);

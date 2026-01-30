@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Label } from '@/components/ui/Label';
-import { Plus, Search, Filter, MapPin, Calendar, User } from 'lucide-react';
+import { Plus, Search, Filter, MapPin, Calendar, User, ThumbsUp } from 'lucide-react';
 
 interface Report {
   _id: string;
@@ -31,6 +31,8 @@ interface Report {
 
 export default function ReportsPage() {
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale || 'en';
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -112,7 +114,7 @@ export default function ReportsPage() {
             </p>
           </div>
           <Button
-            onClick={() => router.push('/reports/new')}
+            onClick={() => router.push(`/${locale}/reports/new`)}
             size="lg"
             className="bg-primary hover:bg-primary/90"
           >
@@ -189,7 +191,7 @@ export default function ReportsPage() {
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground mb-4">No reports found</p>
-              <Button onClick={() => router.push('/reports/new')}>
+              <Button onClick={() => router.push(`/${locale}/reports/new`)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Create First Report
               </Button>
@@ -201,7 +203,7 @@ export default function ReportsPage() {
               <Card
                 key={report._id}
                 className="hover:shadow-lg transition-all cursor-pointer overflow-hidden"
-                onClick={() => router.push(`/reports/${report._id}`)}
+                onClick={() => router.push(`/${locale}/reports/${report._id}`)}
               >
                 {/* Image */}
                 {report.images && report.images.length > 0 && (
@@ -271,8 +273,8 @@ export default function ReportsPage() {
                     )}
 
                     <div className="pt-2 border-t border-border">
-                      <span className="text-sm text-muted-foreground">
-                        👍 {report.upvotes} upvotes
+                      <span className="text-sm text-muted-foreground flex items-center gap-1">
+                        <ThumbsUp className="w-4 h-4" /> {report.upvotes} upvotes
                       </span>
                     </div>
                   </div>

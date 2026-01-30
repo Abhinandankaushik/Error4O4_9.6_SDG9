@@ -35,7 +35,6 @@ export async function GET(request: Request) {
         },
       },
     })
-      .populate('categoryId', 'name icon color')
       .populate('reportedBy', 'name')
       .populate('assignedTo', 'name')
       .limit(limit)

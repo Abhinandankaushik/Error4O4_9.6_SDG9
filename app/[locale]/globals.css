@@ -158,3 +158,39 @@ button, a, input, select, textarea {
 .status-rejected {
   background-color: var(--destructive);
 }
+
+/* Prevent zoom and improve touch interactions */
+html {
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+/* Prevent double-tap zoom on buttons */
+button, a, input[type="button"], input[type="submit"] {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* Ensure video elements don't cause zoom */
+video {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

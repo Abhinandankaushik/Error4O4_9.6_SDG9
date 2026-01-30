@@ -2,12 +2,17 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Report from '@/models/Report';
 import ReportHistory from '@/models/ReportHistory';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 
 // GET /api/reports - Get all reports with filters
 export async function GET(request: Request) {
   try {
     await connectDB();
+    
+    const { userId } = await auth();
+    const user = userId ? await currentUser() : null;
+    const userRole = user?.publicMetadata?.role as string;
+    const userCity = user?.publicMetadata?.city as string;
     
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
@@ -15,6 +20,7 @@ export async function GET(request: Request) {
     const assignedTo = searchParams.get('assignedTo');
     const reportedBy = searchParams.get('reportedBy');
     const area = searchParams.get('area');
+    const stage = searchParams.get('stage');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     const skip = (page - 1) * limit;
@@ -27,6 +33,21 @@ export async function GET(request: Request) {
     if (reportedBy) query.reportedBy = reportedBy;
     if (area) query.area = { $regex: area, $options: 'i' };
     
+    // Filter by approval stage for role-based dashboards
+    if (stage) {
+      const stages = stage.split(',');
+      if (stages.length > 1) {
+        query.currentStage = { $in: stages };
+      } else {
+        query.currentStage = stage;
+      }
+    }
+    
+    // City-based filtering for employees (not citizens)
+    if (userRole && userRole !== 'citizen' && userCity) {
+      query.city = userCity;
+    }
+    
     const reports = await Report.find(query)
       .populate('reportedBy', 'name email')
       .populate('assignedTo', 'name email')
@@ -36,14 +57,33 @@ export async function GET(request: Request) {
     
     const total = await Report.countDocuments(query);
     
-    return NextResponse.json({
-      success: true,
-      data: reports,
-      count: reports.length,
-      total,
-      page,
-      pages: Math.ceil(total / limit),
-    });
+    return NextResponse.json(
+      reports.map(report => ({
+        _id: report._id,
+        title: report.title,
+        description: report.description,
+        category: report.category,
+        priority: report.priority,
+        status: report.status,
+        currentStage: report.currentStage,
+        location: report.location,
+        address: report.address,
+        city: report.city,
+        area: report.area,
+        landmark: report.landmark,
+        images: report.images,
+        createdAt: report.createdAt,
+        userId: report.reportedBy,
+        userName: report.reportedBy?.name || 'Unknown',
+        userEmail: report.reportedBy?.email || '',
+        assignedCityManager: report.assignedCityManager,
+        assignedInfraManager: report.assignedInfraManager,
+        assignedIssueResolver: report.assignedIssueResolver,
+        assignedContractor: report.assignedContractor,
+        approvalHistory: report.approvalHistory,
+        workCompletionImages: report.workCompletionImages,
+      }))
+    );
   } catch (error: any) {
     console.error('Error fetching reports:', error);
     return NextResponse.json(
@@ -65,6 +105,8 @@ export async function POST(request: Request) {
       );
     }
     
+    const user = await currentUser();
+    
     await connectDB();
     
     const body = await request.json();
@@ -74,6 +116,7 @@ export async function POST(request: Request) {
       category,
       location,
       address,
+      city,
       area,
       landmark,
       images,
@@ -96,7 +139,7 @@ export async function POST(request: Request) {
       );
     }
     
-    // Create report
+    // Create report with approval workflow
     const report = await Report.create({
       title,
       description,
@@ -106,12 +149,20 @@ export async function POST(request: Request) {
         coordinates: location.coordinates,
       },
       address,
+      city: city || area, // Use city if provided, otherwise use area
       area,
       landmark,
       images: images || [],
       priority: priority || 'medium',
       reportedBy: userId,
+      userId: userId,
+      userName: user?.firstName && user?.lastName 
+        ? `${user.firstName} ${user.lastName}` 
+        : user?.emailAddresses[0]?.emailAddress || "Unknown",
+      userEmail: user?.emailAddresses[0]?.emailAddress || '',
       status: 'submitted',
+      currentStage: 'pending_city_manager', // Initial stage
+      approvalHistory: [],
     });
     
     // Create history entry

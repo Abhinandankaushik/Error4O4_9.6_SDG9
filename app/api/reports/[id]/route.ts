@@ -12,7 +12,6 @@ export async function GET(
     const { id } = await params;
     
     const report = await Report.findById(id)
-      .populate('categoryId', 'name icon color description')
       .populate('reportedBy', 'name email avatar')
       .populate('assignedTo', 'name email avatar');
     
@@ -85,7 +84,6 @@ export async function PATCH(
       { $set: updates },
       { new: true, runValidators: true }
     )
-      .populate('categoryId', 'name icon color')
       .populate('reportedBy', 'name email avatar')
       .populate('assignedTo', 'name email avatar');
     
