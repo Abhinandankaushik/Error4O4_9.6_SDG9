@@ -16,6 +16,7 @@
      MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority
      ```
 
+
 ## Project Structure
 
 - **`lib/mongodb.ts`** - Database connection utility with connection caching
