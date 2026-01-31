@@ -207,23 +207,8 @@ video {
   }
 }
 
-@keyframes slide-down {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
 .animate-slide-up {
   animation: slide-up 0.3s ease-out forwards;
-}
-
-.animate-slide-down {
-  animation: slide-down 0.3s ease-out forwards;
 }
 
 /* Responsive utilities */
@@ -267,4 +252,193 @@ video {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
+}
+
+/* ============================================ */
+/* ACCESSIBILITY FEATURES */
+/* ============================================ */
+
+/* Screen Reader Only Content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip to Main Content Link */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background-color: #000;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
+.skip-to-main:focus {
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+}
+
+/* Enhanced Focus Indicators for Keyboard Navigation */
+*:focus {
+  outline: 3px solid #4A90E2 !important;
+  outline-offset: 2px !important;
+}
+
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 3px solid #4A90E2 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.2) !important;
+}
+
+/* High Contrast Mode */
+.high-contrast {
+  filter: contrast(150%) saturate(150%);
+}
+
+.high-contrast * {
+  border-color: #000 !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.high-contrast a {
+  text-decoration: underline !important;
+  font-weight: 600;
+}
+
+.high-contrast button {
+  border: 3px solid #000 !important;
+  font-weight: 700;
+}
+
+.high-contrast input,
+.high-contrast textarea,
+.high-contrast select {
+  border: 3px solid #000 !important;
+  background: #fff !important;
+  color: #000 !important;
+}
+
+.high-contrast .bg-blue-500,
+.high-contrast .bg-blue-600 {
+  background-color: #0000ff !important;
+}
+
+.high-contrast .bg-green-500,
+.high-contrast .bg-green-600 {
+  background-color: #008000 !important;
+}
+
+.high-contrast .bg-red-500,
+.high-contrast .bg-red-600 {
+  background-color: #ff0000 !important;
+}
+
+.high-contrast .bg-yellow-500,
+.high-contrast .bg-yellow-600 {
+  background-color: #ffff00 !important;
+  color: #000 !important;
+}
+
+/* Reduced Motion for Users with Motion Sensitivity */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Better Link Visibility */
+a:not(.button):not(.btn) {
+  text-decoration: underline;
+  text-decoration-color: rgba(74, 144, 226, 0.4);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+a:not(.button):not(.btn):hover,
+a:not(.button):not(.btn):focus {
+  text-decoration-color: rgba(74, 144, 226, 1);
+}
+
+/* Enhanced Touch Targets for Mobile */
+@media (max-width: 768px) {
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Color Blind Friendly Enhancements */
+.status-success {
+  background-color: #0066cc !important; /* Blue instead of green */
+}
+
+.status-error {
+  background-color: #ff6600 !important; /* Orange instead of red */
+}
+
+.status-warning {
+  background-color: #ffcc00 !important; /* Gold */
+  color: #000 !important;
+}
+
+/* Enhanced Form Accessibility */
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-color: #dc2626 !important;
+  border-width: 2px !important;
+}
+
+/* Keyboard Navigation Helper */
+:focus-visible {
+  outline: 3px solid #4A90E2 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 6px rgba(74, 144, 226, 0.2) !important;
+}
+
+/* Loading State Accessibility */
+[aria-busy="true"] {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+/* Disabled State Clarity */
+[disabled],
+[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: none;
 }

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 // MongoDB connection
-const MONGODB_URI = 'mongodb://localhost:27017/infrastructure-reports';
+const MONGODB_URI = 'mongodb://localhost:27017/infrareport';
 
 // User Schema (simplified for script)
 const userSchema = new mongoose.Schema({

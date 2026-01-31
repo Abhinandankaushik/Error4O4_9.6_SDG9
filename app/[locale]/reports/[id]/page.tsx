@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import IssueProgressBar from '@/components/IssueProgressBar';
+import ScreenReaderAnnouncer from '@/components/ScreenReaderAnnouncer';
 import { 
   FileText, Eye, Settings, CheckCircle, Lock, XCircle, 
   Circle, AlertCircle, AlertTriangle, AlertOctagon,
@@ -39,6 +41,20 @@ interface Report {
     email: string;
     avatar?: string;
   };
+  approvedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  approvedAt?: string;
+  initiatedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  initiatedAt?: string;
   location: {
     type: string;
     coordinates: [number, number];
@@ -131,6 +147,7 @@ export default function ReportDetailPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => {
     fetchReport();
@@ -145,6 +162,7 @@ export default function ReportDetailPage() {
 
       if (data.success) {
         setReport(data.data);
+        setAnnouncement(`Report loaded: ${data.data.title}. Status: ${data.data.status}`);
       } else {
         setError(data.error || 'Report not found');
       }
@@ -211,6 +229,9 @@ export default function ReportDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-950 to-blue-950/20 relative overflow-hidden">
+      {/* Screen Reader Announcements */}
+      <ScreenReaderAnnouncer message={announcement} />
+      
       {/* Animated Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#1a1a1a_1px,transparent_1px),linear-gradient(to_bottom,#1a1a1a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-20" />
       
@@ -224,6 +245,7 @@ export default function ReportDetailPage() {
           variant="outline"
           onClick={() => router.push(`/${locale}/reports`)}
           className="mb-6 group hover:border-blue-500/50 transition-all border-gray-700"
+          aria-label="Go back to reports list"
         >
           <span className="mr-2 group-hover:-translate-x-1 transition-transform">←</span>
           Back to Reports
@@ -232,6 +254,14 @@ export default function ReportDetailPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Progress Bar Card */}
+            <Card className="p-8 bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border-2 border-blue-500/20 shadow-2xl shadow-blue-500/10 hover:border-blue-500/40 transition-all duration-300">
+              <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                Issue Progress
+              </h2>
+              <IssueProgressBar status={report.status} showLabels={true} size="lg" />
+            </Card>
+
             {/* Header Card */}
             <Card className="p-8 bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border-2 border-blue-500/20 shadow-2xl shadow-blue-500/10 hover:border-blue-500/40 transition-all duration-300">
               {/* Status & Priority Badges */}
@@ -555,6 +585,94 @@ export default function ReportDetailPage() {
                       <Mail className="w-4 h-4" />
                       {report.assignedTo.email}
                     </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Approved By */}
+            {report.approvedBy && (
+              <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border-2 border-green-500/20 shadow-2xl shadow-green-500/10 hover:border-green-500/40 transition-all duration-300">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                  <CheckCircle className="w-6 h-6 text-green-400" />
+                  Approved By
+                </h3>
+                <div className="flex items-center gap-4 bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-green-500/30 transition-colors">
+                  {report.approvedBy.avatar ? (
+                    <img
+                      src={report.approvedBy.avatar}
+                      alt={report.approvedBy.name}
+                      className="w-14 h-14 rounded-full border-2 border-green-500/30 shadow-lg shadow-green-500/20"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-2xl font-bold text-white border-2 border-green-500/30 shadow-lg shadow-green-500/20">
+                      {report.approvedBy.name?.[0]?.toUpperCase() || report.approvedBy.email?.[0]?.toUpperCase() || 'A'}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-white text-lg">
+                      {report.approvedBy.name}
+                    </p>
+                    <p className="text-sm text-gray-400 flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {report.approvedBy.email}
+                    </p>
+                    {report.approvedAt && (
+                      <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(report.approvedAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Initiated By */}
+            {report.initiatedBy && (
+              <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border-2 border-cyan-500/20 shadow-2xl shadow-cyan-500/10 hover:border-cyan-500/40 transition-all duration-300">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                  <Settings className="w-6 h-6 text-cyan-400" />
+                  Resolution Initiated By
+                </h3>
+                <div className="flex items-center gap-4 bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-cyan-500/30 transition-colors">
+                  {report.initiatedBy.avatar ? (
+                    <img
+                      src={report.initiatedBy.avatar}
+                      alt={report.initiatedBy.name}
+                      className="w-14 h-14 rounded-full border-2 border-cyan-500/30 shadow-lg shadow-cyan-500/20"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-2xl font-bold text-white border-2 border-cyan-500/30 shadow-lg shadow-cyan-500/20">
+                      {report.initiatedBy.name?.[0]?.toUpperCase() || report.initiatedBy.email?.[0]?.toUpperCase() || 'I'}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-white text-lg">
+                      {report.initiatedBy.name}
+                    </p>
+                    <p className="text-sm text-gray-400 flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {report.initiatedBy.email}
+                    </p>
+                    {report.initiatedAt && (
+                      <p className="text-xs text-cyan-400 mt-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(report.initiatedAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    )}
                   </div>
                 </div>
               </Card>

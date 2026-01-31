@@ -2,13 +2,11 @@
   "name": "InfraReport - Infrastructure Issue Reporting",
   "short_name": "InfraReport",
   "description": "Report and track infrastructure issues with AR navigation",
-  "start_url": "/en?source=pwa",
+  "start_url": "/en",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
-  "scope": "/",
-  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
