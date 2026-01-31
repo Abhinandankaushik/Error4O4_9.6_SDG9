@@ -39,6 +39,20 @@ interface Report {
     email: string;
     avatar?: string;
   };
+  approvedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  approvedAt?: string;
+  initiatedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+  };
+  initiatedAt?: string;
   location: {
     type: string;
     coordinates: [number, number];
@@ -555,6 +569,94 @@ export default function ReportDetailPage() {
                       <Mail className="w-4 h-4" />
                       {report.assignedTo.email}
                     </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Approved By */}
+            {report.approvedBy && (
+              <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border-2 border-green-500/20 shadow-2xl shadow-green-500/10 hover:border-green-500/40 transition-all duration-300">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                  <CheckCircle className="w-6 h-6 text-green-400" />
+                  Approved By
+                </h3>
+                <div className="flex items-center gap-4 bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-green-500/30 transition-colors">
+                  {report.approvedBy.avatar ? (
+                    <img
+                      src={report.approvedBy.avatar}
+                      alt={report.approvedBy.name}
+                      className="w-14 h-14 rounded-full border-2 border-green-500/30 shadow-lg shadow-green-500/20"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-2xl font-bold text-white border-2 border-green-500/30 shadow-lg shadow-green-500/20">
+                      {report.approvedBy.name?.[0]?.toUpperCase() || report.approvedBy.email?.[0]?.toUpperCase() || 'A'}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-white text-lg">
+                      {report.approvedBy.name}
+                    </p>
+                    <p className="text-sm text-gray-400 flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {report.approvedBy.email}
+                    </p>
+                    {report.approvedAt && (
+                      <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(report.approvedAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Initiated By */}
+            {report.initiatedBy && (
+              <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl border-2 border-cyan-500/20 shadow-2xl shadow-cyan-500/10 hover:border-cyan-500/40 transition-all duration-300">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                  <Settings className="w-6 h-6 text-cyan-400" />
+                  Resolution Initiated By
+                </h3>
+                <div className="flex items-center gap-4 bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700/50 hover:border-cyan-500/30 transition-colors">
+                  {report.initiatedBy.avatar ? (
+                    <img
+                      src={report.initiatedBy.avatar}
+                      alt={report.initiatedBy.name}
+                      className="w-14 h-14 rounded-full border-2 border-cyan-500/30 shadow-lg shadow-cyan-500/20"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-2xl font-bold text-white border-2 border-cyan-500/30 shadow-lg shadow-cyan-500/20">
+                      {report.initiatedBy.name?.[0]?.toUpperCase() || report.initiatedBy.email?.[0]?.toUpperCase() || 'I'}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-white text-lg">
+                      {report.initiatedBy.name}
+                    </p>
+                    <p className="text-sm text-gray-400 flex items-center gap-1">
+                      <Mail className="w-4 h-4" />
+                      {report.initiatedBy.email}
+                    </p>
+                    {report.initiatedAt && (
+                      <p className="text-xs text-cyan-400 mt-1 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {new Date(report.initiatedAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    )}
                   </div>
                 </div>
               </Card>

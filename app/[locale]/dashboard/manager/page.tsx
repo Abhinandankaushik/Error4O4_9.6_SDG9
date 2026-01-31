@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Report {
   _id: string;
@@ -24,6 +25,14 @@ interface Report {
     icon: string;
   };
   upvotes: number;
+  approvedBy?: {
+    _id: string;
+    name: string;
+  };
+  initiatedBy?: {
+    _id: string;
+    name: string;
+  };
 }
 
 interface Analytics {
@@ -39,6 +48,7 @@ export default function ManagerDashboard() {
   const router = useRouter();
   const params = useParams();
   const locale = params.locale || 'en';
+  const { user } = useAuth();
   const [reports, setReports] = useState<Report[]>([]);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -84,13 +94,25 @@ export default function ManagerDashboard() {
   };
 
   const handleStatusChange = async (reportId: string, newStatus: string) => {
+    if (!user) {
+      alert('You must be logged in to perform this action');
+      return;
+    }
+
     try {
+      const updateData: any = { status: newStatus };
+      
+      // If changing to in_progress, track who initiated it
+      if (newStatus === 'in_progress') {
+        updateData.initiatedBy = user._id;
+      }
+
       const response = await fetch(`/api/reports/${reportId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(updateData),
       });
 
       const data = await response.json();
@@ -105,6 +127,38 @@ export default function ManagerDashboard() {
     } catch (error) {
       console.error('Error updating status:', error);
       alert('Error updating status');
+    }
+  };
+
+  const handleApproveReport = async (reportId: string) => {
+    if (!user) {
+      alert('You must be logged in to perform this action');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/reports/${reportId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          approvedBy: user._id,
+          status: 'under_review'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        fetchDashboardData();
+        alert('Report approved successfully');
+      } else {
+        alert('Failed to approve report');
+      }
+    } catch (error) {
+      console.error('Error approving report:', error);
+      alert('Error approving report');
     }
   };
 
@@ -265,6 +319,8 @@ export default function ManagerDashboard() {
                       <th className="pb-3 font-medium">Priority</th>
                       <th className="pb-3 font-medium">Area</th>
                       <th className="pb-3 font-medium">Reported By</th>
+                      <th className="pb-3 font-medium">Approved By</th>
+                      <th className="pb-3 font-medium">Initiated By</th>
                       <th className="pb-3 font-medium">Votes</th>
                       <th className="pb-3 font-medium">Actions</th>
                     </tr>
@@ -272,7 +328,7 @@ export default function ManagerDashboard() {
                   <tbody>
                     {reports.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="py-12 text-center text-gray-400">
+                        <td colSpan={10} className="py-12 text-center text-gray-400">
                           <div className="flex flex-col items-center gap-3">
                             <span className="text-5xl">📭</span>
                             <p className="text-lg">No reports found</p>
@@ -313,6 +369,34 @@ export default function ManagerDashboard() {
                           </td>
                           <td className="py-4 text-sm text-gray-300">{report.area || 'N/A'}</td>
                           <td className="py-4 text-sm text-gray-300">{report.reportedBy?.name}</td>
+                          <td className="py-4 text-sm">
+                            {report.approvedBy ? (
+                              <span className="text-green-400 flex items-center gap-1">
+                                ✓ {report.approvedBy.name}
+                              </span>
+                            ) : (
+                              <Button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleApproveReport(report._id);
+                                }}
+                                variant="outline"
+                                size="sm"
+                                className="text-xs bg-green-600/20 border-green-500/30 hover:bg-green-600/40 text-green-400"
+                              >
+                                Approve
+                              </Button>
+                            )}
+                          </td>
+                          <td className="py-4 text-sm">
+                            {report.initiatedBy ? (
+                              <span className="text-cyan-400 flex items-center gap-1">
+                                ⚙️ {report.initiatedBy.name}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500">-</span>
+                            )}
+                          </td>
                           <td className="py-4 text-sm text-cyan-400 font-semibold">
                             👍 {report.upvotes}
                           </td>

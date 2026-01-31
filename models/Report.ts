@@ -27,6 +27,10 @@ export interface IReport {
   // User relationships
   reportedBy: string; // Reference to User (citizen)
   assignedTo?: string; // Reference to User (city_manager)
+  approvedBy?: string; // Reference to User who approved the report
+  approvedAt?: Date; // When the report was approved
+  initiatedBy?: string; // Reference to User who initiated the resolution
+  initiatedAt?: Date; // When the resolution was initiated
   
   // Tracking
   viewCount: number;
@@ -125,6 +129,18 @@ const ReportSchema = new Schema<IReport>(
     },
     assignedTo: {
       type: String,
+    },
+    approvedBy: {
+      type: String,
+    },
+    approvedAt: {
+      type: Date,
+    },
+    initiatedBy: {
+      type: String,
+    },
+    initiatedAt: {
+      type: Date,
     },
     viewCount: {
       type: Number,

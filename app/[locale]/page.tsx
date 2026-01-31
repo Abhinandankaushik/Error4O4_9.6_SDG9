@@ -166,7 +166,7 @@ export default function HomePage() {
                             {[
                                 { value: '10K+', label: t('stats.reports'), color: 'text-blue-500', icon: BarChart3 },
                                 { value: '85%', label: t('stats.resolved'), color: 'text-green-500', icon: CheckCircle },
-                                { value: '50+', label: t('stats.cities'), color: 'text-yellow-500', icon: Building },
+                                { value: '50+', label: t('stats.cities'), color: 'text-cyan-500', icon: Building },
                                 { value: '24/7', label: t('stats.support'), color: 'text-purple-500', icon: Zap }
                             ].map((stat, index) => (
                                 <motion.div

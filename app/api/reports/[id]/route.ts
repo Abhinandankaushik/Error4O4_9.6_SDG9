@@ -13,7 +13,9 @@ export async function GET(
     
     const report = await Report.findById(id)
       .populate('reportedBy', 'name email avatar')
-      .populate('assignedTo', 'name email avatar');
+      .populate('assignedTo', 'name email avatar')
+      .populate('approvedBy', 'name email avatar')
+      .populate('initiatedBy', 'name email avatar');
     
     if (!report) {
       return NextResponse.json(
@@ -65,6 +67,8 @@ export async function PATCH(
       'resolutionNote',
       'resolutionImages',
       'estimatedResolutionDate',
+      'approvedBy',
+      'initiatedBy',
     ];
     
     const updates: any = {};
@@ -79,13 +83,26 @@ export async function PATCH(
       updates.resolvedAt = new Date();
     }
     
+    // Set approvedAt if approvedBy is being set for the first time
+    if (body.approvedBy && !report.approvedBy) {
+      updates.approvedAt = new Date();
+    }
+    
+    // Set initiatedAt if status changes to in_progress for the first time
+    if (body.status === 'in_progress' && report.status !== 'in_progress' && body.initiatedBy) {
+      updates.initiatedBy = body.initiatedBy;
+      updates.initiatedAt = new Date();
+    }
+    
     const updatedReport = await Report.findByIdAndUpdate(
       id,
       { $set: updates },
       { new: true, runValidators: true }
     )
       .populate('reportedBy', 'name email avatar')
-      .populate('assignedTo', 'name email avatar');
+      .populate('assignedTo', 'name email avatar')
+      .populate('approvedBy', 'name email avatar')
+      .populate('initiatedBy', 'name email avatar');
     
     return NextResponse.json({
       success: true,
