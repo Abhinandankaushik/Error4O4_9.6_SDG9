@@ -6,6 +6,7 @@ import { useRouter, usePathname, useParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState, useEffect } from 'react';
 import Navbar from "@/components/Navbar";
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -17,16 +18,9 @@ import {
 } from 'lucide-react';
 import "./globals.css"
 
-const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
-  { code: 'mr', name: 'मराठी', flag: '🇮🇳' }
-];
-
 export default function HomePage() {
     const t = useTranslations('Home');
     const router = useRouter();
-    const pathname = usePathname();
     const params = useParams();
     const locale = params.locale as string;
     const { user } = useAuth();
@@ -36,35 +30,14 @@ export default function HomePage() {
         setMounted(true);
     }, []);
     
-    const changeLanguage = (locale: string) => {
-        // Replace locale in pathname
-        const newPathname = pathname.replace(/^\/(en|hi|mr)/, `/${locale}`);
-        router.push(newPathname);
-    };
-    
     return (
         <div className="min-h-screen bg-background">
             <Navbar />
             
-            {/* Language Selector - Floating Dropdown */}
-            <motion.div 
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="fixed top-16 sm:top-20 right-2 sm:right-4 z-40"
-            >
-                <select
-                    value={locale}
-                    onChange={(e) => changeLanguage(e.target.value)}
-                    className="appearance-none bg-card border-2 border-blue-500/20 rounded-lg px-2 py-2 sm:px-4 sm:py-3 pr-8 sm:pr-10 text-xs sm:text-sm font-medium hover:border-blue-500/40 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer shadow-2xl backdrop-blur-sm"
-                >
-                    {languages.map((lang) => (
-                        <option key={lang.code} value={lang.code}>
-                            {lang.flag} {lang.name}
-                        </option>
-                    ))}
-                </select>
-            </motion.div>
+            {/* Language Switcher - Only on Home Page */}
+            <div className="fixed top-20 right-4 z-40">
+                <LanguageSwitcher />
+            </div>
             
             {/* Hero Section */}
             <section className="relative overflow-hidden">

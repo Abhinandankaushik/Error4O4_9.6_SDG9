@@ -136,64 +136,73 @@ export default function AreaStatistics({ data, title = 'Statistics by Area' }: A
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-            <BarChart3 className="w-5 h-5" />
+            <BarChart3 className="w-5 h-5 flex-shrink-0" />
             <span>{title}</span>
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3 sm:space-y-4">
+        <CardContent className="p-4 sm:p-6">
+          <div className="space-y-4">
             {data.map((stat, index) => (
               <div
                 key={index}
                 onClick={() => fetchAreaReports(stat.area)}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-lg bg-secondary hover:bg-accent transition-all cursor-pointer border-2 border-transparent hover:border-blue-500/30 hover:shadow-lg group gap-2 sm:gap-0"
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 p-4 rounded-lg bg-secondary hover:bg-accent transition-all cursor-pointer border-2 border-transparent hover:border-blue-500/30 hover:shadow-lg group"
               >
-                <div className="flex-1 w-full">
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                {/* Left Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
                     <h4 className="font-semibold text-base sm:text-lg group-hover:text-blue-400 transition-colors flex items-center gap-2">
-                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                       <span className="truncate">{stat.area}</span>
                     </h4>
-                    <Badge variant={getResolutionRateBadge(stat.resolutionRate)} className="text-xs">
+                    <Badge variant={getResolutionRateBadge(stat.resolutionRate)} className="text-xs flex-shrink-0">
                       {stat.resolutionRate.toFixed(1)}%
                     </Badge>
                   </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
-                      Total: <span className="font-medium text-foreground">{stat.totalReports}</span>
+                  
+                  <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span>Total:</span>
+                      <span className="font-semibold text-foreground">{stat.totalReports}</span>
                     </span>
-                    <span className="flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                      Resolved:{' '}
-                      <span className="font-medium text-foreground">{stat.resolvedReports}</span>
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span>Resolved:</span>
+                      <span className="font-semibold text-foreground">{stat.resolvedReports}</span>
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-                      Pending:{' '}
-                      <span className="font-medium text-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <span>Pending:</span>
+                      <span className="font-semibold text-foreground">
                         {stat.totalReports - stat.resolvedReports}
                       </span>
                     </span>
                   </div>
+                  
                   <p className="text-xs text-muted-foreground mt-2 group-hover:text-blue-400 transition-colors">
                     Click to view all reports in this area
                   </p>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="w-32 ml-4">
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all ${
-                        stat.resolutionRate >= 80
-                          ? 'bg-success'
-                          : stat.resolutionRate >= 60
-                          ? 'bg-warning'
-                          : 'bg-destructive'
-                      }`}
-                      style={{ width: `${stat.resolutionRate}%` }}
-                    ></div>
+                {/* Right Progress Bar */}
+                <div className="w-full sm:w-32 flex items-center flex-shrink-0">
+                  <div className="w-full">
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 ${
+                          stat.resolutionRate >= 80
+                            ? 'bg-success'
+                            : stat.resolutionRate >= 60
+                            ? 'bg-warning'
+                            : 'bg-destructive'
+                        }`}
+                        style={{ width: `${stat.resolutionRate}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-center text-muted-foreground mt-1">
+                      {stat.resolutionRate.toFixed(0)}% Rate
+                    </p>
                   </div>
                 </div>
               </div>
@@ -201,29 +210,31 @@ export default function AreaStatistics({ data, title = 'Statistics by Area' }: A
           </div>
 
           {/* Summary */}
-          <div className="mt-6 pt-6 border-t grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold">
-                {data.reduce((sum, stat) => sum + stat.totalReports, 0)}
-              </p>
-              <p className="text-sm text-muted-foreground">Total Reports</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-success">
-                {data.reduce((sum, stat) => sum + stat.resolvedReports, 0)}
-              </p>
-              <p className="text-sm text-muted-foreground">Resolved</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">
-                {(
-                  (data.reduce((sum, stat) => sum + stat.resolvedReports, 0) /
-                    data.reduce((sum, stat) => sum + stat.totalReports, 0)) *
-                  100
-                ).toFixed(1)}
-                %
-              </p>
-              <p className="text-sm text-muted-foreground">Avg Rate</p>
+          <div className="mt-6 pt-6 border-t">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center p-3 rounded-lg bg-secondary/50">
+                <p className="text-2xl sm:text-3xl font-bold text-foreground">
+                  {data.reduce((sum, stat) => sum + stat.totalReports, 0)}
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Total Reports</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-secondary/50">
+                <p className="text-2xl sm:text-3xl font-bold text-success">
+                  {data.reduce((sum, stat) => sum + stat.resolvedReports, 0)}
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Resolved</p>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-secondary/50">
+                <p className="text-2xl sm:text-3xl font-bold text-blue-500">
+                  {(
+                    (data.reduce((sum, stat) => sum + stat.resolvedReports, 0) /
+                      data.reduce((sum, stat) => sum + stat.totalReports, 0)) *
+                    100
+                  ).toFixed(1)}
+                  %
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">Avg Rate</p>
+              </div>
             </div>
           </div>
         </CardContent>

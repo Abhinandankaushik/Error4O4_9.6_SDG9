@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { AuthProvider } from '@/contexts/AuthContext';
 import InstallPWA from '@/components/InstallPWA';
 import RegisterServiceWorker from '@/components/RegisterServiceWorker';
+import AccessibilityFeatures from '@/components/AccessibilityFeatures';
+import KeyboardShortcuts from '@/components/KeyboardShortcuts';
 import './globals.css';
 
 export default async function LocaleLayout({
@@ -35,10 +37,19 @@ export default async function LocaleLayout({
                 <meta name="apple-mobile-web-app-title" content="InfraReport" />
             </head>
             <body>
+                {/* Skip to Main Content Link */}
+                <a href="#main-content" className="skip-to-main">
+                    Skip to main content
+                </a>
+
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <AuthProvider>
                         <RegisterServiceWorker />
-                        {children}
+                        <AccessibilityFeatures />
+                        <KeyboardShortcuts />
+                        <main id="main-content">
+                            {children}
+                        </main>
                         <InstallPWA />
                     </AuthProvider>
                 </NextIntlClientProvider>

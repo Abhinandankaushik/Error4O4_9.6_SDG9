@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { useAuth } from '@/contexts/AuthContext';
+import IssueProgressBar from '@/components/IssueProgressBar';
 
 interface Report {
   _id: string;
@@ -343,13 +344,17 @@ export default function ManagerDashboard() {
                           onClick={() => router.push(`/${locale}/reports/${report._id}`)}
                         >
                           <td className="py-4">
-                            <div>
-                              <p className="font-medium text-sm text-white hover:text-blue-400 transition-colors">
+                            <div className="max-w-xs">
+                              <p className="font-medium text-sm text-white hover:text-blue-400 transition-colors truncate">
                                 {report.title}
                               </p>
-                              <p className="text-xs text-gray-500 mt-1">
+                              <p className="text-xs text-gray-500 mt-1 truncate">
                                 {report.address.substring(0, 50)}...
                               </p>
+                              {/* Mini Progress Bar */}
+                              <div className="mt-2 w-full">
+                                <IssueProgressBar status={report.status} showLabels={false} size="sm" />
+                              </div>
                             </div>
                           </td>
                           <td className="py-4">
