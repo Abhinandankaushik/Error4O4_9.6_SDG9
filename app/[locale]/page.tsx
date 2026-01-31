@@ -51,12 +51,12 @@ export default function HomePage() {
                 initial={{ opacity: 0, x: 100 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="fixed top-20 right-4 z-50"
+                className="fixed top-16 sm:top-20 right-2 sm:right-4 z-40"
             >
                 <select
                     value={locale}
                     onChange={(e) => changeLanguage(e.target.value)}
-                    className="appearance-none bg-card border-2 border-blue-500/20 rounded-lg px-4 py-3 pr-10 text-sm font-medium hover:border-blue-500/40 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer shadow-2xl backdrop-blur-sm"
+                    className="appearance-none bg-card border-2 border-blue-500/20 rounded-lg px-2 py-2 sm:px-4 sm:py-3 pr-8 sm:pr-10 text-xs sm:text-sm font-medium hover:border-blue-500/40 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer shadow-2xl backdrop-blur-sm"
                 >
                     {languages.map((lang) => (
                         <option key={lang.code} value={lang.code}>
@@ -86,7 +86,7 @@ export default function HomePage() {
 
                 {/* Floating Orbs */}
                 <motion.div
-                    className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl"
+                    className="hidden md:block absolute top-20 left-10 w-48 h-48 md:w-72 md:h-72 bg-blue-500/20 rounded-full blur-3xl"
                     animate={{
                         scale: [1, 1.2, 1],
                         opacity: [0.3, 0.5, 0.3],
@@ -94,7 +94,7 @@ export default function HomePage() {
                     transition={{ duration: 4, repeat: Infinity }}
                 />
                 <motion.div
-                    className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+                    className="hidden md:block absolute bottom-20 right-10 w-64 h-64 md:w-96 md:h-96 bg-purple-500/20 rounded-full blur-3xl"
                     animate={{
                         scale: [1.2, 1, 1.2],
                         opacity: [0.3, 0.5, 0.3],
@@ -102,8 +102,8 @@ export default function HomePage() {
                     transition={{ duration: 5, repeat: Infinity }}
                 />
                 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-                    <div className="text-center space-y-8">
+                <div className="relative max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-16 sm:py-20 md:py-24 lg:py-32">
+                    <div className="text-center space-y-6 sm:space-y-8">
                         {/* Badge */}
                         <motion.div 
                             initial={{ opacity: 0, y: -20 }}
@@ -111,7 +111,7 @@ export default function HomePage() {
                             transition={{ duration: 0.6 }}
                             className="flex justify-center"
                         >
-                            <Badge variant="secondary" className="px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-2 border-blue-500/30 backdrop-blur-sm shadow-xl">
+                            <Badge variant="secondary" className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-2 border-blue-500/30 backdrop-blur-sm shadow-xl">
                                 <span className="mr-2">🏗️</span>
                                 {t('title')}
                             </Badge>
@@ -122,14 +122,14 @@ export default function HomePage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="space-y-4"
+                            className="space-y-3 sm:space-y-4"
                         >
-                            <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight px-2">
                                 <span className="bg-gradient-to-r from-blue-600 via-cyan-500 to-purple-600 bg-clip-text text-transparent">
                                     {t('subtitle')}
                                 </span>
                             </h1>
-                            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
                                 {t('description')}
                             </p>
                         </motion.div>
@@ -139,17 +139,17 @@ export default function HomePage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.4 }}
-                            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+                            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4"
                         >
-                            <Link href={`/${locale}/reports/new`}>
-                                <Button size="lg" className="text-lg px-10 py-7 group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-2xl shadow-blue-500/30 border-2 border-blue-400/30">
-                                    <MdReportProblem className="w-6 h-6 mr-2 group-hover:rotate-12 transition-transform" />
+                            <Link href={`/${locale}/reports/new`} className="w-full sm:w-auto">
+                                <Button size="lg" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-7 group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-2xl shadow-blue-500/30 border-2 border-blue-400/30">
+                                    <MdReportProblem className="w-5 h-5 sm:w-6 sm:h-6 mr-2 group-hover:rotate-12 transition-transform" />
                                     {t('getStarted')}
                                 </Button>
                             </Link>
                             {mounted && !user && (
-                                <Link href={`/${locale}/login`}>
-                                    <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2 hover:bg-gradient-to-r hover:from-blue-600/10 hover:to-purple-600/10">
+                                <Link href={`/${locale}/login`} className="w-full sm:w-auto">
+                                    <Button size="lg" variant="outline" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-10 py-5 sm:py-7 border-2 hover:bg-gradient-to-r hover:from-blue-600/10 hover:to-purple-600/10">
                                         {t('signIn')}
                                     </Button>
                                 </Link>
@@ -161,7 +161,7 @@ export default function HomePage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: 0.6 }}
-                            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto pt-16"
+                            className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-8 max-w-4xl mx-auto pt-8 sm:pt-12 md:pt-16 px-2"
                         >
                             {[
                                 { value: '10K+', label: t('stats.reports'), color: 'text-blue-500', icon: BarChart3 },
@@ -174,13 +174,13 @@ export default function HomePage() {
                                     initial={{ scale: 0 }}
                                     animate={{ scale: 1 }}
                                     transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
-                                    whileHover={{ scale: 1.1, y: -5 }}
+                                    whileHover={{ scale: 1.05, y: -3 }}
                                     className="relative"
                                 >
-                                    <div className="bg-card/50 backdrop-blur-sm border-2 border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/50 transition-all shadow-xl">
-                                        <stat.icon className="w-10 h-10 mb-2" />
-                                        <div className={`text-4xl font-bold ${stat.color}`}>{stat.value}</div>
-                                        <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
+                                    <div className="bg-card/50 backdrop-blur-sm border-2 border-blue-500/20 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 hover:border-blue-500/50 transition-all shadow-xl">
+                                        <stat.icon className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 mb-1 sm:mb-2" />
+                                        <div className={`text-2xl sm:text-3xl md:text-4xl font-bold ${stat.color}`}>{stat.value}</div>
+                                        <div className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1">{stat.label}</div>
                                     </div>
                                 </motion.div>
                             ))}
@@ -190,14 +190,14 @@ export default function HomePage() {
             </section>
 
             {/* How It Works Section */}
-            <section className="py-24 bg-secondary/30">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-secondary/30">
+                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="text-center space-y-4 mb-16"
+                        className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12 md:mb-16 px-2"
                     >
                         <h2 className="text-4xl md:text-5xl font-bold">
                             {t('howItWorks.title')}

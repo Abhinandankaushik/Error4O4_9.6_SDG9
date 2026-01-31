@@ -317,20 +317,20 @@ export default function NewReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div className="min-h-screen bg-background p-3 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-3xl mx-auto">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl">Report Infrastructure Issue</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-2xl sm:text-3xl">Report Infrastructure Issue</CardTitle>
+            <CardDescription className="text-sm sm:text-base">
               Help improve your community by reporting infrastructure problems
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               {/* Title */}
               <div className="space-y-2">
-                <Label htmlFor="title">
+                <Label htmlFor="title" className="text-sm sm:text-base">
                   Title <span className="text-destructive">*</span>
                 </Label>
                 <Input
@@ -340,12 +340,13 @@ export default function NewReportPage() {
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   maxLength={200}
                   required
+                  className="text-sm sm:text-base"
                 />
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">
+                <Label htmlFor="description" className="text-sm sm:text-base">
                   Description <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
@@ -356,6 +357,7 @@ export default function NewReportPage() {
                   rows={5}
                   maxLength={2000}
                   required
+                  className="text-sm sm:text-base"
                 />
                 <p className="text-xs text-muted-foreground">
                   {formData.description.length}/2000 characters
@@ -364,7 +366,7 @@ export default function NewReportPage() {
 
               {/* Category */}
               <div className="space-y-2">
-                <Label htmlFor="category">
+                <Label htmlFor="category" className="text-sm sm:text-base">
                   Category <span className="text-destructive">*</span>
                 </Label>
                 <Input
@@ -374,6 +376,7 @@ export default function NewReportPage() {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   maxLength={100}
                   required
+                  className="text-sm sm:text-base"
                 />
                 <p className="text-xs text-muted-foreground">
                   Enter the infrastructure category for this issue
@@ -382,11 +385,12 @@ export default function NewReportPage() {
 
               {/* Priority */}
               <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
+                <Label htmlFor="priority" className="text-sm sm:text-base">Priority</Label>
                 <Select
                   id="priority"
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                  className="text-sm sm:text-base"
                 >
                   <option value="low">Low</option>
                   <option value="medium">Medium</option>
@@ -396,8 +400,8 @@ export default function NewReportPage() {
               </div>
 
               {/* Location */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
                   <Label>
                     Location <span className="text-destructive">*</span>
                   </Label>
