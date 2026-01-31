@@ -9,6 +9,11 @@ import {
   Trash2, Milestone, Trees, Bus, Wrench 
 } from 'lucide-react';
 
+// Extend DeviceOrientationEvent for iOS webkit properties
+interface DeviceOrientationEventWithWebkit extends DeviceOrientationEvent {
+  webkitCompassHeading?: number;
+}
+
 interface Issue {
   _id: string;
   title: string;
@@ -69,14 +74,16 @@ export default function ARNavigationOverlay({
 
     // Handle device orientation for compass heading
     const handleOrientation = (event: DeviceOrientationEvent) => {
+      const eventWithWebkit = event as DeviceOrientationEventWithWebkit;
+      
       if (event.alpha !== null) {
         // alpha gives compass heading (0-360)
         // 0 = North, 90 = East, 180 = South, 270 = West
         let heading = event.alpha;
         
         // For iOS, we need to adjust based on webkitCompassHeading if available
-        if (event.webkitCompassHeading) {
-          heading = event.webkitCompassHeading;
+        if (eventWithWebkit.webkitCompassHeading !== undefined) {
+          heading = eventWithWebkit.webkitCompassHeading;
         } else {
           // For Android, alpha is the compass heading
           heading = 360 - event.alpha; // Invert for proper direction

@@ -194,3 +194,77 @@ video {
   -webkit-user-select: none;
   user-select: none;
 }
+
+/* PWA Install Banner Animation */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.3s ease-out forwards;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  /* Ensure cards are full width on mobile */
+  .card {
+    width: 100%;
+  }
+  
+  /* Better text wrapping on mobile */
+  h1, h2, h3, h4, h5, h6 {
+    word-break: break-word;
+    hyphens: auto;
+  }
+  
+  /* Responsive tables */
+  table {
+    font-size: 14px;
+  }
+  
+  /* Better button sizing */
+  button {
+    min-height: 44px; /* iOS minimum touch target */
+  }
+}
+
+/* Landscape phone optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* Reduce padding on landscape */
+  .min-h-screen {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Tablet optimization */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Optimize for tablet screens */
+  .container {
+    max-width: 100%;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}

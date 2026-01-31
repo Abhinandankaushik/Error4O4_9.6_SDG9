@@ -135,41 +135,41 @@ export default function AreaStatistics({ data, title = 'Statistics by Area' }: A
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <BarChart3 className="w-5 h-5" />
             <span>{title}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {data.map((stat, index) => (
               <div
                 key={index}
                 onClick={() => fetchAreaReports(stat.area)}
-                className="flex items-center justify-between p-4 rounded-lg bg-secondary hover:bg-accent transition-all cursor-pointer border-2 border-transparent hover:border-blue-500/30 hover:shadow-lg group"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 rounded-lg bg-secondary hover:bg-accent transition-all cursor-pointer border-2 border-transparent hover:border-blue-500/30 hover:shadow-lg group gap-2 sm:gap-0"
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <h4 className="font-semibold text-lg group-hover:text-blue-400 transition-colors flex items-center gap-2">
-                      <MapPin className="w-5 h-5" />
-                      <span>{stat.area}</span>
+                <div className="flex-1 w-full">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <h4 className="font-semibold text-base sm:text-lg group-hover:text-blue-400 transition-colors flex items-center gap-2">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="truncate">{stat.area}</span>
                     </h4>
-                    <Badge variant={getResolutionRateBadge(stat.resolutionRate)}>
+                    <Badge variant={getResolutionRateBadge(stat.resolutionRate)} className="text-xs">
                       {stat.resolutionRate.toFixed(1)}%
                     </Badge>
                   </div>
-                  <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
+                  <div className="flex flex-wrap gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
-                      <FileText className="w-4 h-4" />
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
                       Total: <span className="font-medium text-foreground">{stat.totalReports}</span>
                     </span>
                     <span className="flex items-center gap-1">
-                      <CheckCircle className="w-4 h-4" />
+                      <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                       Resolved:{' '}
                       <span className="font-medium text-foreground">{stat.resolvedReports}</span>
                     </span>
                     <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                       Pending:{' '}
                       <span className="font-medium text-foreground">
                         {stat.totalReports - stat.resolvedReports}
