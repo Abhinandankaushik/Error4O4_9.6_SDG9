@@ -1,12 +1,13 @@
 # 🏗️ InfraReport - Infrastructure Repair Crowdsourcing Platform
 
-A comprehensive platform for crowdsourcing infrastructure repair reports with AR mapping, AI object detection, heat maps, and municipal SaaS features. Built for SDG3 Hackathon.
+A comprehensive platform for crowdsourcing infrastructure repair reports with AR mapping, AI object detection, heat maps, and municipal SaaS features.
 
 ## ✨ Features
 
-### 👥 Dual User Roles
-- **Citizens**: Report infrastructure issues with photos, location, and real-time tracking
-- **City Issue Managers**: Manage, assign, and track resolution of all reported issues
+### 👥 Three User Roles
+- **Users (Citizens)**: Report infrastructure issues with photos, location, and real-time tracking
+- **Managers (City Managers)**: Manage, assign, and track resolution of all reported issues
+- **Admins**: Approve managers and oversee the entire system
 
 ### 🤖 AI-Powered AR Visualization (NEW!)
 - **Real-Time Object Detection**: TensorFlow.js with COCO-SSD model
@@ -34,7 +35,7 @@ A comprehensive platform for crowdsourcing infrastructure repair reports with AR
 - Smooth transitions and animations
 - Custom scrollbars
 - Fully responsive design
-- Beautiful Clerk authentication integration
+- Custom JWT authentication with role-based access control
 
 ## 🚀 Quick Start
 
@@ -48,8 +49,8 @@ This will install all required packages including:
 - TensorFlow.js for AI object detection
 - COCO-SSD model for real-time object recognition
 - Mapbox for heat maps
-- Clerk for authentication
 - MongoDB/Mongoose for database
+- bcrypt & JWT for authentication
 
 ### 2. Set Up Environment Variables
 
@@ -59,9 +60,8 @@ Copy `.env.local` and add your API keys:
 # MongoDB
 MONGODB_URI=your_mongodb_uri
 
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_key
-CLERK_SECRET_KEY=your_key
+# JWT Authentication
+JWT_SECRET=your_secure_secret_key
 
 # Cloudinary (Image Upload)
 CLOUDINARY_CLOUD_NAME=your_cloud_name
@@ -72,11 +72,10 @@ CLOUDINARY_API_SECRET=your_api_secret
 NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN=your_token
 ```
 
-### 3. Seed Initial Data
+### 3. Create Admin Account
 
 ```bash
-npm install -D tsx
-npx tsx scripts/seed.ts
+node scripts/create-admin.js
 ```
 
 ### 4. Run Development Server
@@ -122,7 +121,7 @@ models/
 - **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Database**: MongoDB with Mongoose
-- **Authentication**: Clerk
+- **Authentication**: JWT with bcrypt
 - **Styling**: Tailwind CSS 4
 - **Maps**: Mapbox GL JS
 - **Charts**: Recharts
@@ -132,9 +131,9 @@ models/
 ## 📊 Database Models
 
 ### User
-- Dual roles: `citizen` | `city_manager`
-- Managed areas for city managers
-- Integration with Clerk
+- Three roles: `user` | `manager` | `admin`
+- Password hashing with bcrypt
+- Manager approval workflow
 
 ### Report
 - Geolocation (2dsphere indexed)
@@ -152,106 +151,64 @@ models/
 - Action tracking
 - User attribution
 
-## 🎯 Key Features Implementation
+## 🎯 Key Features
 
 ### Heat Mapping
-```typescript
-// Aggregates reports by grid cells
-// Shows resolution rate by color intensity
-// Tooltips display area statistics
-```
+Aggregates reports by grid cells with resolution rate visualization and interactive tooltips.
 
-### AR Mapping
-```typescript
-// Uses device camera + geolocation
-// Queries nearby reports within radius
-// Displays historical timeline
-// Shows before/after photos
-```
+### AR Navigation
+Uses device camera and geolocation to display nearby reports with real-time navigation and distance tracking.
 
 ### Analytics
-```typescript
-// Resolution rate = (resolved / total) × 100
-// Calculates average resolution time
-// Trends by date, area, category
-```
+Comprehensive statistics including resolution rates, average resolution time, and trends by date, area, and category.
 
 ## 🔐 API Routes
 
-### Reports
-- `GET /api/reports` - List with filters
-- `POST /api/reports` - Create report
-- `GET /api/reports/[id]` - Single report
-- `PATCH /api/reports/[id]` - Update status
-- `GET /api/reports/nearby` - Geolocation query
-
-### Analytics
-- `GET /api/analytics/heatmap` - Heat map data
-- `GET /api/analytics/resolution-rate` - Statistics
-
-### Other
-- `POST /api/upload` - Image upload
-- `GET /api/categories` - List categories
+The platform provides RESTful APIs for:
+- **Reports**: CRUD operations, geolocation queries, nearby search
+- **Analytics**: Heat map data, resolution statistics
+- **Categories**: Issue type management
+- **Upload**: Image handling via Cloudinary
+- **Authentication**: JWT-based login, signup, user management
+- **Admin**: Manager approval workflow
 
 ## 🚢 Deployment
 
-### Vercel (Recommended)
-
-1. Push to GitHub
-2. Import in Vercel
-3. Add environment variables
-4. Deploy
-
-### Environment Setup
-
-Ensure MongoDB allows Vercel IPs or use `0.0.0.0/0` for development.
+Deploy on Vercel by importing your GitHub repository and adding environment variables.
 
 ## 📝 Getting API Keys
 
 - **MongoDB**: https://www.mongodb.com/cloud/atlas (Free)
-- **Clerk**: https://clerk.com (Free)
 - **Cloudinary**: https://cloudinary.com (Free - 25GB)
 - **Mapbox**: https://account.mapbox.com (Free - 50k loads)
 
-## 🎨 UI Components
+## 📖 Documentation
 
-Built with custom shadcn-style components:
-- Button (variants: default, destructive, outline, ghost)
-- Card (with header, content, footer)
-- Badge (status indicators)
-- Input, Textarea, Select
-- Label
-
-## 📖 Detailed Setup Guide
-
-See [SETUP_GUIDE.md](SETUP_GUIDE.md) for comprehensive documentation.
+- [SETUP_GUIDE.md](SETUP_GUIDE.md) - Detailed setup instructions
+- [AUTH_SETUP.md](AUTH_SETUP.md) - Authentication system documentation
+- [QUICK_START.md](QUICK_START.md) - Quick start checklist
+- [MONGODB_SETUP.md](MONGODB_SETUP.md) - MongoDB configuration
 
 ## 🐛 Troubleshooting
 
 **Maps not showing?**
 - Verify `NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`
-- Uncomment Mapbox code in HeatMapView.tsx
 
 **Images not uploading?**
 - Check Cloudinary credentials
-- Verify API key permissions
 
 **Database errors?**
 - Confirm MongoDB URI format
 - Check network access in Atlas
 
+**Authentication issues?**
+- See [AUTH_SETUP.md](AUTH_SETUP.md)
+- Default admin: admin@infrareport.com / admin123
+
 **AR not working?**
-- Requires HTTPS (camera permission)
+- Requires HTTPS for camera permission
 - Enable location services
 
 ## 📄 License
 
-MIT License - Built for SDG3 Hackathon
-
-## 🤝 Contributing
-
-Issues and pull requests welcome!
-
----
-
-**Built with ❤️ for improving urban infrastructure through citizen participation**
+MIT License
