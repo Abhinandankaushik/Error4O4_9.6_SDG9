@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,6 +46,18 @@ export async function POST(request: NextRequest) {
       managedAreas: role === 'manager' ? managedAreas : [],
     });
 
+    // Generate JWT token for auto-login
+    const token = jwt.sign(
+      { 
+        userId: user._id, 
+        email: user.email, 
+        role: user.role,
+        isApproved: user.isApproved 
+      },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
     // Return user without password
     const userResponse = {
       _id: user._id,
@@ -54,13 +69,27 @@ export async function POST(request: NextRequest) {
       avatar: user.avatar,
     };
 
-    return NextResponse.json({
+    // Create response with token
+    const response = NextResponse.json({
       success: true,
-      data: userResponse,
+      data: {
+        user: userResponse,
+        token,
+      },
       message: role === 'manager' 
         ? 'Account created! Waiting for admin approval to access manager dashboard.'
         : 'Account created successfully!',
     });
+
+    // Set HTTP-only cookie
+    response.cookies.set('auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
   } catch (error: any) {
     console.error('Signup error:', error);
     return NextResponse.json(
